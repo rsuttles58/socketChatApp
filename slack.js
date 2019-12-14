@@ -1,3 +1,4 @@
+//The server file
 const express = require('express')
 const app = express();
 const socketio = require('socket.io');
@@ -5,19 +6,19 @@ const socketio = require('socket.io');
 app.use(express.static(__dirname + '/public'))
 
 const expressServer = app.listen(9000);
+//socket.io server object
 const io = socketio(expressServer);
 
 //when a client connects to the server.  Run this code.
 io.on('connection', (socket)=>{
+    //When connected, send this code to client.
     socket.emit('messageFromServer',{data:'Welcome to the socketIo server'});
+    //When code is received from client, run this.
     socket.on('messageToServer',(dataFromClient)=>{
         console.log(dataFromClient);
     })
-    socket.on('newMessageToServer', (message)=>{
-        io.emit('messageToClients', {text:message.text})
-    })
-
-
+    socket.join('level1')
+    io.of('/').to('level1').emit('joined',`${socket.id} says I have joined the level 1 room!`)
 })
 
 //On connection to the admin namespace, run the below code.
